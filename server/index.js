@@ -10,13 +10,12 @@ app.use(express.json()); //req.body
 //ROUTES//
 
 //create a todo
-
 app.post("/todos", async (req, res) => {
   try {
-    const { description } = req.body;
+    const { description, priority } = req.body;
     const newTodo = await pool.query(
-      "INSERT INTO todo (description) VALUES($1) RETURNING *",
-      [description]
+      "INSERT INTO todo (description, priority) VALUES($1, $2) RETURNING *",
+      [description, priority]
     );
 
     res.json(newTodo.rows[0]);
@@ -26,18 +25,22 @@ app.post("/todos", async (req, res) => {
 });
 
 //get all todos
-
 app.get("/todos", async (req, res) => {
   try {
-    const allTodos = await pool.query("SELECT * FROM todo");
+    const allTodos = await pool.query(
+      `SELECT * FROM todo ORDER BY CASE 
+        WHEN priority = 'Low'  THEN 3 
+        WHEN priority = 'Medium' THEN 2 
+        WHEN priority = 'High'  THEN 1 
+      END`);
     res.json(allTodos.rows);
+    console.log(res);
   } catch (err) {
     console.error(err.message);
   }
 });
 
 //get a todo
-
 app.get("/todos/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -52,11 +55,11 @@ app.get("/todos/:id", async (req, res) => {
 });
 
 //update a todo
-
 app.put("/todos/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { description } = req.body;
+    const { priority } = req.body;
     const updateTodo = await pool.query(
       "UPDATE todo SET description = $1 WHERE todo_id = $2",
       [description, id]
@@ -69,7 +72,6 @@ app.put("/todos/:id", async (req, res) => {
 });
 
 //delete a todo
-
 app.delete("/todos/:id", async (req, res) => {
   try {
     const { id } = req.params;

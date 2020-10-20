@@ -2,14 +2,15 @@ import React, { Fragment, useState } from "react";
 
 const EditTodo = ({ todo }) => {
   const [description, setDescription] = useState(todo.description);
+  const [priority, setPriority] = useState(todo.priority);
 
   //edit description function
-
   const updateDescription = async e => {
     e.preventDefault();
     try {
-      const body = { description };
-      const response = await fetch(
+      const body = { description, priority };
+      //const response = await fetch(
+        await fetch(
         `http://localhost:5000/todos/${todo.todo_id}`,
         {
           method: "PUT",
@@ -28,7 +29,7 @@ const EditTodo = ({ todo }) => {
     <Fragment>
       <button
         type="button"
-        class="btn btn-warning"
+        className="btn btn-warning"
         data-toggle="modal"
         data-target={`#id${todo.todo_id}`}
       >
@@ -41,7 +42,7 @@ const EditTodo = ({ todo }) => {
       <div
         class="modal"
         id={`id${todo.todo_id}`}
-        onClick={() => setDescription(todo.description)}
+        onClick={() => {setDescription(todo.description); setPriority(todo.priority)}}
       >
         <div class="modal-dialog">
           <div class="modal-content">
@@ -51,7 +52,7 @@ const EditTodo = ({ todo }) => {
                 type="button"
                 class="close"
                 data-dismiss="modal"
-                onClick={() => setDescription(todo.description)}
+                onClick={() => {setDescription(todo.description); setPriority(todo.priority)}}
               >
                 &times;
               </button>
@@ -64,7 +65,17 @@ const EditTodo = ({ todo }) => {
                 value={description}
                 onChange={e => setDescription(e.target.value)}
               />
-            </div>
+            <div className="col">
+              <select
+                value={priority}
+                onChange={e => setPriority(e.target.value)}
+              >
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </div> 
+          </div>
 
             <div class="modal-footer">
               <button
@@ -73,13 +84,14 @@ const EditTodo = ({ todo }) => {
                 data-dismiss="modal"
                 onClick={e => updateDescription(e)}
               >
-                Edit
+                Submit
               </button>
+
               <button
                 type="button"
                 class="btn btn-danger"
                 data-dismiss="modal"
-                onClick={() => setDescription(todo.description)}
+                onClick={() => {setDescription(todo.description); setPriority(todo.priority)}}
               >
                 Close
               </button>

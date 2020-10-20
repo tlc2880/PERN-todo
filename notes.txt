@@ -1,0 +1,7 @@
+10/19/20:
+Added priority feature to InputTodo.js and it works fine.
+Added the priority column to Postgres and it works.
+Display Sorted priorities from high to low.
+Delete works fine with new priority feature.
+
+Unable to add priority to EditTodo.js.
